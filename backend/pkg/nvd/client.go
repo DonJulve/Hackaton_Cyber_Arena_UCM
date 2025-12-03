@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/DonJulve/Hackaton_Cyber_Arena_UCM/internal/models"
+	"github.com/DonJulve/Hackaton_Cyber_Arena_UCM/backend/internal/models"
 )
 
 const BaseURL = "https://services.nvd.nist.gov/rest/json/cves/2.0"

@@ -3,7 +3,7 @@ package sorter
 import (
 	"sort"
 
-	"github.com/DonJulve/Hackaton_Cyber_Arena_UCM/internal/models"
+	"github.com/DonJulve/Hackaton_Cyber_Arena_UCM/backend/internal/models"
 )
 
 // SortVulnerabilities sorts a slice of vulnerabilities based on the given criteria and direction.
