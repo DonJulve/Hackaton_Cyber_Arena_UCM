@@ -1,6 +1,6 @@
 # Hackaton Cyber Arena UCM
 
-Este proyecto contiene el código fuente para el desafío Hackaton Cyber Arena UCM.
+Este proyecto contiene el código fuente para el desafío Hackaton Cyber Arena por parte de un equipo de la UCM.
 
 ### Tabla de Contenidos
 ----
