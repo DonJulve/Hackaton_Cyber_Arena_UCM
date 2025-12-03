@@ -1,0 +1,141 @@
+<div *ngIf="data" class="mt-8 animate-fade-in">
+  <div class="flex justify-between items-end mb-6 px-2">
+    <div>
+      <h2 class="text-2xl font-bold text-white mb-1">Resultados de Búsqueda</h2>
+      <p class="text-cyber-muted text-sm">Se encontraron {{ data.totalResults }} vulnerabilidades</p>
+    </div>
+    <span
+      class="text-xs font-mono text-cyber-primary bg-cyber-primary/10 px-3 py-1 rounded-full border border-cyber-primary/20">
+      Primeros {{ data.resultsPerPage }}
+    </span>
+  </div>
+
+  <div class="grid gap-4">
+    <div *ngFor="let v of vulnerabilities" class="glass-card rounded-xl p-6 group relative overflow-hidden">
+      <!-- Hover Glow -->
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-cyber-primary/5 to-cyber-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      </div>
+
+      <div class="relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <h3 class="text-xl font-bold text-white font-mono tracking-tight">
+                <a [href]="'https://nvd.nist.gov/vuln/detail/' + v.cve.id" target="_blank"
+                  class="hover:text-cyber-primary transition-colors flex items-center gap-2">
+                  {{ v.cve.id }}
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-50" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </h3>
+              <span *ngIf="v.cve.vulnStatus"
+                class="text-xs px-2 py-0.5 rounded bg-white/5 text-cyber-muted border border-white/10">
+                {{ v.cve.vulnStatus }}
+              </span>
+            </div>
+            <div class="text-xs text-cyber-muted flex gap-4">
+              <span>Publicado: <span class="text-gray-400">{{ v.cve.published | date:'mediumDate' }}</span></span>
+              <span>Modificado: <span class="text-gray-400">{{ v.cve.lastModified | date:'mediumDate' }}</span></span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <span
+              [class]="'px-4 py-1.5 rounded-full text-sm font-bold shadow-lg backdrop-blur-md border ' + getSeverityColor(v)">
+              {{ getScore(v) }}
+            </span>
+          </div>
+        </div>
+
+        <p
+          class="text-gray-300 text-sm leading-relaxed mb-4 line-clamp-2 group-hover:line-clamp-none transition-all duration-300">
+          {{ v.cve.descriptions[0]?.value }}
+        </p>
+
+        <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-white/5 items-center justify-between">
+          <span *ngIf="v.cve.sourceIdentifier" class="text-xs font-mono text-cyber-muted flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ v.cve.sourceIdentifier }}
+          </span>
+
+          <button (click)="getSummary(v)" [disabled]="summaryState[v.cve.id]?.loading"
+            class="text-xs flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 hover:from-purple-500/30 hover:to-pink-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+            <span *ngIf="!summaryState[v.cve.id]?.loading">✨ AI Summary</span>
+            <span *ngIf="summaryState[v.cve.id]?.loading" class="flex items-center gap-2">
+              <svg class="animate-spin h-3 w-3 text-purple-300" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              Generating...
+            </span>
+          </button>
+        </div>
+
+        <!-- AI Summary Result -->
+        <div *ngIf="summaryState[v.cve.id]?.content"
+          class="mt-4 p-4 rounded-lg bg-gradient-to-br from-purple-900/20 to-pink-900/20 border border-purple-500/20 animate-fade-in">
+          <h4 class="text-sm font-bold text-purple-300 mb-2 flex items-center gap-2">
+            ✨ AI Analysis
+          </h4>
+          <div class="text-sm text-gray-300 whitespace-pre-wrap font-mono leading-relaxed">
+            {{ summaryState[v.cve.id].content }}
+          </div>
+        </div>
+
+        <div *ngIf="summaryState[v.cve.id]?.error"
+          class="mt-4 p-3 rounded bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          {{ summaryState[v.cve.id].error }}
+        </div>
+
+        <!-- Exploits Section -->
+        <div *ngIf="v.exploits && v.exploits.length > 0" class="mt-4 pt-4 border-t border-white/5">
+          <h4 class="text-sm font-bold text-cyber-primary mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Exploits Detectados ({{ v.exploits.length }})
+          </h4>
+          <div class="grid gap-2">
+            <div *ngFor="let exploit of v.exploits"
+              class="bg-black/20 rounded p-2 text-sm border border-white/5 hover:border-cyber-primary/30 transition-colors">
+              <div class="flex justify-between items-start">
+                <a [href]="exploit.url" target="_blank"
+                  class="font-mono text-cyber-secondary hover:text-cyber-primary truncate block max-w-[70%]">
+                  {{ exploit.name || exploit.description || 'Exploit sin nombre' }}
+                </a>
+                <span class="text-xs text-cyber-muted bg-white/5 px-1.5 py-0.5 rounded">{{ exploit.type }}</span>
+              </div>
+              <div class="flex justify-between mt-1 text-xs text-cyber-muted">
+                <span>{{ exploit.author || 'Desconocido' }}</span>
+                <span>{{ exploit.date | date:'shortDate' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!data" class="text-center mt-20 opacity-50">
+  <div class="inline-block p-6 rounded-full bg-white/5 mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-cyber-muted" fill="none" viewBox="0 0 24 24"
+      stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+  </div>
+  <p class="text-cyber-muted text-lg">Listo para buscar vulnerabilidades</p>
+</div>
