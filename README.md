@@ -82,8 +82,8 @@ La aplicación estará disponible en `http://localhost:4200/`.
 ---
 Para cualquier detalle, contacta a los propietarios del proyecto en LinkedIn:
 
+- [Javier Julve Yubero](https://www.linkedin.com/in/javier-julve-yubero-188203384/)
 - [Lucas Calzada del Pozo](https://www.linkedin.com/in/lucas-calzada-del-pozo-562571304/)
 - [Alberto Meléndez García](https://www.linkedin.com/in/alberto-melendez-garcia-4713a1264/)
-- [Javier Julve Yubero](https://www.linkedin.com/in/javier-julve-yubero-188203384/)
 - [Pablo García Viña](https://www.linkedin.com/in/pablo-garc%C3%ADa-vi%C3%B1a/)
 
