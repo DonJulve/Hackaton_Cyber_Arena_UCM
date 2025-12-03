@@ -1,4 +1,4 @@
-module github.com/DonJulve/Hackaton_Cyber_Arena_UCM
+module github.com/DonJulve/Hackaton_Cyber_Arena_UCM/backend
 
 go 1.24.9
 
